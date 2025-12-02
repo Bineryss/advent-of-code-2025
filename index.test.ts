@@ -15,7 +15,17 @@ describe('dial test', () => {
     ])('should execute movements correctly', ({ start, movement, direction, expected }) => {
         const result = executeMovement(start, movement, direction as 'L' | 'R');
 
-        expect(result).toBe(expected);
+        expect(result.pointer).toBe(expected);
+    });
+
+    it.each([
+        { start: 1, movement: 180, direction: 'L', expected: 2 },
+        { start: 1, movement: 180, direction: 'R', expected: 1 },
+        { start: 99, movement: 2, direction: 'R', expected: 1 },
+    ])('should count zeros correctly', ({ start, movement, direction, expected }) => {
+        const result = executeMovement(start, movement, direction as 'L' | 'R');
+
+        expect(result.crossesZero).toBe(expected);
     });
 
     it('process instructions correctly counts zero occurrences', () => {
@@ -33,6 +43,6 @@ describe('dial test', () => {
         ];
         const result = processInstructions(instructions);
 
-        expect(result).toBe(3);
+        expect(result).toBe(6);
     });
 })

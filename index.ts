@@ -7,12 +7,21 @@ const actionMap: Record<'L' | 'R', number> = {
     'R': 1,
 };
 
-export function executeMovement(pointer: number, movement: number, direction: 'L' | 'R'): number {
+export function executeMovement(pointer: number, movement: number, direction: 'L' | 'R'): { pointer: number, crossesZero: number } {
     const boundary = max + 1;
     const actualChange = movement % boundary;
     const changeWithDirection = actualChange * actionMap[direction];
 
-    return (Math.abs(pointer + boundary + changeWithDirection)) % boundary;
+    let lastZero = 0
+    if (pointer !== 0) {
+
+        if (changeWithDirection + pointer > boundary || changeWithDirection + pointer < 0) {
+            lastZero = 1;
+        }
+    }
+    const crossesZero = Math.floor(movement / boundary) + lastZero;
+
+    return { pointer: (Math.abs(pointer + boundary + changeWithDirection)) % boundary, crossesZero };
 }
 
 export function processInstructions(instructions: string[], start: number = 50): number {
@@ -28,7 +37,9 @@ export function processInstructions(instructions: string[], start: number = 50):
         const movement = parseInt(instruction.slice(1), 10);
         console.log(`moving ${direction} for ${movement} from ${pointer}`);
 
-        pointer = executeMovement(pointer, movement, direction);
+        const result = executeMovement(pointer, movement, direction);
+        pointer = result.pointer;
+        zeroCounter += result.crossesZero;
         if (pointer === 0) {
             zeroCounter++;
         }
