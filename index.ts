@@ -1,21 +1,46 @@
-// server.ts
-import http from 'http';
+import fs from "fs";
 
-const server = http.createServer((req: http.IncomingMessage, res: http.ServerResponse) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('Hello from Docker!');
-});
+const max: number = 99;
 
-export function startServer(port: number = 8080): Promise<http.Server> {
-    return new Promise((resolve) => {
-        server.listen(port, '0.0.0.0', () => {
-            console.log(`Server running on http://0.0.0.0:${port}/`);
-            resolve(server);
-        });
-    });
+const actionMap: Record<'L' | 'R', number> = {
+    'L': -1,
+    'R': 1,
+};
+
+export function executeMovement(pointer: number, movement: number, direction: 'L' | 'R'): number {
+    const boundary = max + 1;
+    const actualChange = movement % boundary;
+    const changeWithDirection = actualChange * actionMap[direction];
+
+    return (Math.abs(pointer + boundary + changeWithDirection)) % boundary;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
-    startServer();
+export function processInstructions(instructions: string[], start: number = 50): number {
+    let zeroCounter = 0;
+    let pointer = start;
+
+    for (const instruction of instructions) {
+
+        const direction = instruction.charAt(0);
+        if (direction !== 'L' && direction !== 'R') {
+            return -1;
+        }
+        const movement = parseInt(instruction.slice(1), 10);
+        console.log(`moving ${direction} for ${movement} from ${pointer}`);
+
+        pointer = executeMovement(pointer, movement, direction);
+        if (pointer === 0) {
+            zeroCounter++;
+        }
+    }
+    return zeroCounter;
 }
+
+
+function main() {
+    const data = fs.readFileSync('input.txt', 'utf-8');
+    const zeroCounter = processInstructions(data.trim().split('\n'));
+    console.log(`Number of times pointer reached zero: ${zeroCounter}`);
+}
+
+main();
