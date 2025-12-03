@@ -5,7 +5,7 @@
 	"type": "module",
 	"main": "index.js",
 	"scripts": {
-		"start": "node index.ts",
+		"start": "tsx index.ts",
 		"test": "vitest run",
 		"build": "tsc"
 	},
@@ -17,5 +17,8 @@
 		"vite": "^6.0.0",
 		"vitest": "^2.1.4"
 	},
-	"packageManager": "pnpm@9.15.5"
+	"packageManager": "pnpm@9.15.5",
+	"dependencies": {
+		"tsx": "^4.21.0"
+	}
 }
