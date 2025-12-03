@@ -1,12 +1,27 @@
-import fs, { access } from "fs";
+import fs from "fs";
+
+export function isSequence(sequence: string, input: string): boolean {
+    if (input.length % sequence.length !== 0) return false
+    if (input.length === sequence.length) return false
+
+    for (let i = 0; i < input.length; i += sequence.length) {
+        if (sequence !== input.slice(i, i + sequence.length)) return false
+    }
+    return true
+}
 
 export function isValid(id: string): boolean {
     if (id.startsWith('0')) return false //kinda makes no sense, considering the rest of the assignemnt, but oh well
-    if (id.length % 2 !== 0) return true
 
-    const middle = id.length / 2
-    const sequence = id.substring(0, middle)
-    return sequence !== id.substring(middle)
+    let sequence = ''
+    for (let index = 0; index < id.length; index++) {
+        sequence += id.charAt(index)
+        if (isSequence(sequence, id)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 export function getAllInvalidIds(start: string, end: string): number[] {

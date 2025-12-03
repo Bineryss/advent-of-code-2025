@@ -1,13 +1,28 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { isValid, getAllInvalidIds, processInput } from './index'
+import { isValid, getAllInvalidIds, processInput, isSequence } from './index'
 
 
 describe('invalid sequences tests', () => {
+    it.each([
+        ['5', '55', true],
+        ['1', '1111', true],
+        ['65', '6565', true],
+        ['1', '101', false],
+        ['1235', '1235', false],
+    ])(
+        'is sequence %s', (sequence, input, expected) => {
+            const result = isSequence(sequence, input)
+
+            expect(result).toBe(expected)
+        }
+    )
     it.each([
         ['55', false],
         ['6464', false],
         ['123123', false],
         ['0101', false],
+        ['111', false],
+        ['101010', false],
         ['101', true],
         ['123456', true],
         ['123', true]
